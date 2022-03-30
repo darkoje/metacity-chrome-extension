@@ -2,13 +2,9 @@
 
   "manifest_version": 3,
   "name": "Metacity extension",
-  "description": "Metacity Real Estate OS price. Developed by Scoop.",
+  "description": "Adds real estate OpenSea price and listing status to Metacity UI. Developed by Scoop.",
   "version": "1.0.0",
 
-  "permissions": [
-    "activeTab",
-    "contextMenus"
-  ],
 
   "icons": { "16": "16.png",
            "48": "48.png",

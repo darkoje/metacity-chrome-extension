@@ -8,17 +8,24 @@ function getRealEstateId(){
     }
 }
 
+// NOT LISTED TO UI
+function notListed(){
+    document.getElementsByClassName("MuiCardActions-root")[0].insertAdjacentHTML('beforeend', '<button id="my_price" class="css-3zukih" style="border-radius:6px !important;padding-left:15px; color:rgb(80, 69, 147);" disabled>Not listed on OS</button>');
+}
+
 // TO KEEP IT CLEAN
 function cleanup(){
     let my_price = document.getElementById('my_price');
-    if(my_price==null){}else{document.getElementById('my_price').remove();}
+    if(my_price==null){}else{
+        document.getElementById('my_price').remove();
+    }
 }
 
 // TO INJECT PRICE TO OPENSEA
 function injectPriceToBox(string){cleanup();
     let inject_here = document.getElementsByClassName("MuiCardActions-root")[0];
     if(inject_here==null){}else{inject_here.insertAdjacentHTML('beforeend',
-        '<span id="my_price" style="padding-left:15px; color:purple;">Listed for: <strong>'+string+'</strong> ETH</span>');
+        '<button id="my_price" class="css-3zukih" style="border-radius:6px !important;padding-left:15px; color:white;background:seagreen !important;" disabled>Listed for: <strong>'+string+'</strong> ETH</button>');
     }
 }
 
@@ -42,7 +49,14 @@ function fetchPrice(id){
 window.onload = (event) => {
 
     // PROCESS FIRST LAND IF DIRECTLY OPENED VIA URL
-    function start(){fetchPrice(getRealEstateId());}
+    function start(){
+        // check for box
+        let box = getRealEstateId();
+        if(box==null){}else{
+            notListed();
+            fetchPrice(getRealEstateId());
+        }
+    }
     setTimeout(start, 5000);
 
     // LISTEN METACITY UI CHANGES
@@ -51,10 +65,20 @@ window.onload = (event) => {
     root.onclick = (event) => {
         cleanup();
         let currentId = getRealEstateId();
-        if (temporaryEstateId != currentId){
-            temporaryEstateId = currentId;
-            fetchPrice(currentId);
+        let box = getRealEstateId();
+
+        if(box==null){}else{
+            if (temporaryEstateId != currentId){
+                temporaryEstateId = currentId;
+                notListed();
+                fetchPrice(getRealEstateId());
+            } else {
+                //console.log("the same box reloaded.");
+                notListed();
+                fetchPrice(getRealEstateId());
+            }
         }
+
     };
 
 };
