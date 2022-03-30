@@ -8,6 +8,7 @@ function getRealEstateId(){
     }
 }
 
+
 // TO KEEP OUR TINY UI CLEAN
 function cleanup(){
     let my_price = document.getElementById('my_price');
@@ -16,11 +17,13 @@ function cleanup(){
     }
 }
 
+
 // WHEN NOT LISTED
 function notListed(){
     cleanup();
     document.getElementsByClassName("MuiCardActions-root")[0].insertAdjacentHTML('beforeend', '<button id="my_price" class="css-3zukih" style="border-radius:6px !important;padding-left:15px; color:rgb(80, 69, 147);" disabled>Not listed on OS</button>');
 }
+
 
 // INJECT PRICE TO METACITY INTERFACE
 function injectPriceToBox(string){
@@ -30,6 +33,7 @@ function injectPriceToBox(string){
         '<button id="my_price" class="css-3zukih" style="border-radius:6px !important;padding-left:15px; color:white;background:seagreen !important;" disabled>Listed for: <strong>'+string+'</strong> ETH</button>');
     }
 }
+
 
 // FETCH PRICE FROM OPENSEA
 function fetchPrice(id){
@@ -44,6 +48,7 @@ function fetchPrice(id){
         } else {
             let sell_orders = []
             orders.forEach(function (order) {
+                // convert WEI to ETH
                 let price = order.base_price/10**18;
                 let side = order.side;
                 if(side==1){sell_orders.push(price);}
@@ -51,6 +56,7 @@ function fetchPrice(id){
             // what if there are only offers on OS?
             if ((sell_orders.length)==0){
                 notListed();
+            // add only lowest active sell order price
             } else {
                 let lowest_listing_price = Math.min.apply(Math, sell_orders);
                 injectPriceToBox(lowest_listing_price.toString());
@@ -64,24 +70,25 @@ function fetchPrice(id){
      });
 }
 
+
+// START EXTENSION
 window.onload = (event) => {
 
-    // PROCESS FIRST LAND IF DIRECTLY OPENED VIA URL
-    function start(){
-        // check if box is available
+    // process first estate if accessed directly via url
+    function processFirstEstate(){
         let box = getRealEstateId();
         if(box==null){}else{
             fetchPrice(getRealEstateId());
         }
     }
-    setTimeout(start, 5000);
+    // 5s timeout for Metacity interface to load
+    setTimeout(processFirstEstate, 5000);
 
     // LISTEN METACITY UI CHANGES
     var temporaryEstateId = getRealEstateId;
     let root = document.getElementById("root");
     root.onclick = (event) => {
         cleanup();
-        let currentId = getRealEstateId();
         let box = getRealEstateId();
         // only fire if estate property box available
         if(box==null){}else{fetchPrice(getRealEstateId());}
