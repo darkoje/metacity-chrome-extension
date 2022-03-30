@@ -1,9 +1,9 @@
 
 // READ LAND ID FROM METACITY UI
 function getRealEstateId(){
-    let os_button = document.getElementsByClassName("MuiButton-contained")[0];
-    if (os_button){
-        let id = os_button.href.split("0x17a0fed3bf90c0a12a7cdad83e3d4b0e06ebab54/")[1];
+    let os_button = document.getElementsByClassName("MuiButton-contained")[0]||"";
+    if (((os_button.href)==null)||((os_button.href)===undefined)){} else {
+        let id = os_button.href.split("0x17a0fed3bf90c0a12a7cdad83e3d4b0e06ebab54/")[1]||"";
         return id;
     }
 }
@@ -71,7 +71,10 @@ function fetchPrice(id){
         cleanup();
         let css = '"border-radius:6px !important;padding-left:15px; color:indianred;"';
         let button = `<button id="my_price" class="css-3zukih" style=${css} disabled> OpenSea API is down!</button>`;
-        document.getElementsByClassName("MuiCardActions-root")[0].insertAdjacentHTML('beforeend', button);
+        if (((document.getElementsByClassName("MuiCardActions-root")[0])==null)||(document.getElementsByClassName("MuiCardActions-root")[0]===undefined)){}
+        else{
+            document.getElementsByClassName("MuiCardActions-root")[0].insertAdjacentHTML('beforeend', button);
+        }
      });
 }
 
@@ -82,7 +85,7 @@ window.onload = (event) => {
     // process first estate if accessed directly via url
     function processFirstEstate(){
         let box = getRealEstateId();
-        if(box==null){}else{
+        if(box==null||box===undefined||box==""){}else{
             fetchPrice(getRealEstateId());
         }
     }
