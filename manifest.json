@@ -1,0 +1,24 @@
+{
+
+  "manifest_version": 3,
+  "name": "Metacity extension",
+  "description": "Metacity Real Estate OS price. Developed by Scoop.",
+  "version": "1.0.0",
+
+  "permissions": [
+    "activeTab",
+    "contextMenus"
+  ],
+
+  "icons": { "16": "16.png",
+           "48": "48.png",
+          "128": "128.png" },
+
+  "content_scripts": [
+    {
+      "matches": ["https://metacity.humansofthemetaverse.com/*"],
+      "js": ["metacity.js"]
+    }
+  ]
+
+}
