@@ -1,5 +1,5 @@
 
-// TO READ LAND ID FROM METACITY UI
+// READ LAND ID FROM METACITY UI
 function getRealEstateId(){
     let os_button = document.getElementsByClassName("MuiButton-contained")[0];
     if (os_button){
@@ -8,12 +8,7 @@ function getRealEstateId(){
     }
 }
 
-// NOT LISTED TO UI
-function notListed(){
-    document.getElementsByClassName("MuiCardActions-root")[0].insertAdjacentHTML('beforeend', '<button id="my_price" class="css-3zukih" style="border-radius:6px !important;padding-left:15px; color:rgb(80, 69, 147);" disabled>Not listed on OS</button>');
-}
-
-// TO KEEP IT CLEAN
+// TO KEEP OUR TINY UI CLEAN
 function cleanup(){
     let my_price = document.getElementById('my_price');
     if(my_price==null){}else{
@@ -21,8 +16,15 @@ function cleanup(){
     }
 }
 
-// TO INJECT PRICE TO OPENSEA
-function injectPriceToBox(string){cleanup();
+// WHEN NOT LISTED
+function notListed(){
+    cleanup();
+    document.getElementsByClassName("MuiCardActions-root")[0].insertAdjacentHTML('beforeend', '<button id="my_price" class="css-3zukih" style="border-radius:6px !important;padding-left:15px; color:rgb(80, 69, 147);" disabled>Not listed on OS</button>');
+}
+
+// INJECT PRICE TO METACITY INTERFACE
+function injectPriceToBox(string){
+    cleanup();
     let inject_here = document.getElementsByClassName("MuiCardActions-root")[0];
     if(inject_here==null){}else{inject_here.insertAdjacentHTML('beforeend',
         '<button id="my_price" class="css-3zukih" style="border-radius:6px !important;padding-left:15px; color:white;background:seagreen !important;" disabled>Listed for: <strong>'+string+'</strong> ETH</button>');
@@ -37,23 +39,38 @@ function fetchPrice(id){
     .then(response => response.json())
     .then(json => {
         let orders = json['orders'];
-        orders.forEach(function (order) {
-            let price = order.base_price;
-            price = price/10**18;
-            injectPriceToBox(price.toString());
-        });
+        if ((orders.length)==0){
+            notListed();
+        } else {
+            let sell_orders = []
+            orders.forEach(function (order) {
+                let price = order.base_price/10**18;
+                let side = order.side;
+                if(side==1){sell_orders.push(price);}
+            });
+            // what if there are only offers on OS?
+            if ((sell_orders.length)==0){
+                notListed();
+            } else {
+                let lowest_listing_price = Math.min.apply(Math, sell_orders);
+                injectPriceToBox(lowest_listing_price.toString());
+            }
+        }
      })
-    .catch(err => console.log(err));
+    .catch(err => {
+        // what if opensea api is down?
+        cleanup();
+        document.getElementsByClassName("MuiCardActions-root")[0].insertAdjacentHTML('beforeend', '<button id="my_price" class="css-3zukih" style="border-radius:6px !important;padding-left:15px; color:rgb(80, 69, 147);" disabled>OpenSea API problem</button>');
+     });
 }
 
 window.onload = (event) => {
 
     // PROCESS FIRST LAND IF DIRECTLY OPENED VIA URL
     function start(){
-        // check for box
+        // check if box is available
         let box = getRealEstateId();
         if(box==null){}else{
-            notListed();
             fetchPrice(getRealEstateId());
         }
     }
@@ -66,19 +83,8 @@ window.onload = (event) => {
         cleanup();
         let currentId = getRealEstateId();
         let box = getRealEstateId();
-
-        if(box==null){}else{
-            if (temporaryEstateId != currentId){
-                temporaryEstateId = currentId;
-                notListed();
-                fetchPrice(getRealEstateId());
-            } else {
-                //console.log("the same box reloaded.");
-                notListed();
-                fetchPrice(getRealEstateId());
-            }
-        }
-
+        // only fire if estate property box available
+        if(box==null){}else{fetchPrice(getRealEstateId());}
     };
 
 };
