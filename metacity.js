@@ -112,7 +112,6 @@ window.onload = (event) => {
         let box = getRealEstateId();
         let itIsPositive = isItPositiveNumber(box);
         if(box==null){}else if(itIsPositive){
-            console.log("boxx", box);
             fetchPrice(box);
         }
     };
