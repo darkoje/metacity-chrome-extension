@@ -79,14 +79,27 @@ function fetchPrice(id){
 }
 
 
+function isItPositiveNumber(str) {
+  if (typeof str !== 'string') {
+    return false;
+  }
+  const num = Number(str);
+  if (Number.isInteger(num) && num > 0) {
+    return true;
+  }
+  return false;
+}
+
 // START EXTENSION
 window.onload = (event) => {
 
     // process first estate if accessed directly via url
     function processFirstEstate(){
         let box = getRealEstateId();
-        if(box==null||box===undefined||box==""){}else{
-            fetchPrice(getRealEstateId());
+        let isItPositive = isItPositiveNumber(box);
+        // process only land that is not reserved
+        if(box==null||box===undefined||box==""){}else if(isItPositive){
+            fetchPrice(box);
         }
     }
     // 5s pause for Metacity interface
@@ -97,7 +110,11 @@ window.onload = (event) => {
     root.onclick = (event) => {
         cleanup();
         let box = getRealEstateId();
-        if(box==null){}else{fetchPrice(getRealEstateId());}
+        let itIsPositive = isItPositiveNumber(box);
+        if(box==null){}else if(itIsPositive){
+            console.log("boxx", box);
+            fetchPrice(box);
+        }
     };
 
 };
