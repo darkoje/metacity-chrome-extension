@@ -78,7 +78,7 @@ function fetchPrice(id){
      });
 }
 
-
+// CHECK IF LAND ID IS A POSITIVE NUMBER
 function isItPositiveNumber(str) {
   if (typeof str !== 'string') {
     return false;
